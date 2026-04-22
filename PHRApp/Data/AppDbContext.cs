@@ -1,12 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PHRApp.Models.Entities;
 using PHRApp.Data.Configurations;
+using PHRApp.Models.JoinEntities;
 
 namespace PHRApp.Data
 {
     public class AppDbContext : DbContext
     {
         public DbSet<Entry> Entries { get; set; } = null!;
+        public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<Attachment> Attachments { get; set; } = null!;
+        public DbSet<EntryCategory> EntryCategories { get; set; } = null!;
+        public DbSet<EntryAttachment> EntryAttachments { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -15,6 +20,8 @@ namespace PHRApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new EntryConfiguration());
+            modelBuilder.ApplyConfiguration(new EntryCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new EntryAttachmentConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
