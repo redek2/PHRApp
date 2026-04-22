@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PHRApp.Models.Entities;
 using PHRApp.Data.Configurations;
+using PHRApp.Models.Entities;
 using PHRApp.Models.JoinEntities;
 
 namespace PHRApp.Data
@@ -22,8 +22,17 @@ namespace PHRApp.Data
             modelBuilder.ApplyConfiguration(new EntryConfiguration());
             modelBuilder.ApplyConfiguration(new EntryCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new EntryAttachmentConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlite("Data Source=phrapp.db");
+            }
         }
     }
 }

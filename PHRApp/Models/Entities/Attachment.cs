@@ -1,5 +1,4 @@
-﻿using PHRApp.Models.Enums;
-using PHRApp.Models.JoinEntities;
+﻿using PHRApp.Models.JoinEntities;
 
 namespace PHRApp.Models.Entities
 {
