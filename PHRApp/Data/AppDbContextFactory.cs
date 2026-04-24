@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using System.IO;
 
 namespace PHRApp.Data
 {
@@ -8,7 +9,16 @@ namespace PHRApp.Data
         public AppDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlite("Data Source=phrapp.db");
+
+            var dbPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "PHRApp",
+                "phrapp.db");
+
+            Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
+
+            optionsBuilder.UseSqlite($"Data Source={dbPath}");
+
             return new AppDbContext(optionsBuilder.Options);
         }
     }
