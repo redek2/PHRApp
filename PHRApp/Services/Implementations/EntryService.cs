@@ -2,14 +2,9 @@
 using PHRApp.Data;
 using PHRApp.Models.DTOs;
 using PHRApp.Models.Entities;
+using PHRApp.Models.Enums;
 using PHRApp.Models.JoinEntities;
 using PHRApp.Services.Interfaces;
-using PHRApp.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PHRApp.Services.Implementations
 {
@@ -105,6 +100,23 @@ namespace PHRApp.Services.Implementations
             _context.Entries.Add(entry);
             await _context.SaveChangesAsync();
             return entry.Id; // Return the ID of the newly created entry
+        }
+
+        public async Task<List<EntryListItemDto>> GetEntriesAsync()
+        {
+            return await _context.Entries
+                .OrderByDescending(e => e.EventDate)
+                .Select(e => new EntryListItemDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    EventDate = e.EventDate,
+                    Status = e.Status,
+                    CategoryNames = e.EntryCategories
+                        .Select(ec => ec.Category.Name)
+                        .ToList()
+                })
+                .ToListAsync();
         }
     }
 }

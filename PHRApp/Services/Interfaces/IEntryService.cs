@@ -1,14 +1,10 @@
 ﻿using PHRApp.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PHRApp.Services.Interfaces
 {
     public interface IEntryService
     {
         Task<int> CreateEntryAsync(CreateEntryDto dto);
+        Task<List<EntryListItemDto>> GetEntriesAsync();
     }
 }

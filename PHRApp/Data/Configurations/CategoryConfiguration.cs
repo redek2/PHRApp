@@ -15,7 +15,10 @@ namespace PHRApp.Data.Configurations
             builder.HasKey(c => c.Id);
 
             // 3. Properties
-            builder.Property(c => c.Name).IsRequired().HasMaxLength(100);
+            builder.Property(c => c.Name)
+                .IsRequired()
+                .HasMaxLength(100)
+                .UseCollation("NOCASE");
             builder.Property(c => c.Description).HasMaxLength(1000);
 
             // 4. Indexes

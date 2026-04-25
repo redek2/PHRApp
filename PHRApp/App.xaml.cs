@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using System.Windows;
 using PHRApp.Data;
-using PHRApp.Services.Interfaces;
-using PHRApp.Services.Implementations;
 using PHRApp.Models.DTOs;
 using PHRApp.Models.Enums;
+using PHRApp.Services.Implementations;
+using PHRApp.Services.Interfaces;
+using System.IO;
+using System.Windows;
 
 namespace PHRApp
 {
@@ -21,23 +21,50 @@ namespace PHRApp
             ConfigureServices(services);
 
             _serviceProvider = services.BuildServiceProvider();
-            
+
+            var categoryService = _serviceProvider.GetRequiredService<ICategoryService>();
             var entryService = _serviceProvider.GetRequiredService<IEntryService>();
 
-            var dto = new CreateEntryDto
+            var dto = new CreateCategoryDto
             {
-                Title = "Test Entry",
-                Description = "This is a test entry.",
-                EventDate = DateTime.UtcNow.AddDays(-1),
-                Status = EntryStatus.Completed,
-                CategoryIds = new List<int>(),
-                FilePaths = new List<string>()
+                Name = "Test Category",
+                Description = "This is a test category."
             };
 
             try
             {
-                var id = await entryService.CreateEntryAsync(dto);
-                MessageBox.Show($"Entry created with ID: {id}");
+                // 1. Create category
+                var categoryId = await categoryService.CreateCategoryAsync(new CreateCategoryDto
+                {
+                    Name = "Zdrowie",
+                    Description = "Zdrowotna kategoria"
+                });
+
+                // 2. Create entry
+                var entryId = await entryService.CreateEntryAsync(new CreateEntryDto
+                {
+                    Title = "Wizyta u lekarza",
+                    Description = "Rutynowe badanie",
+                    EventDate = DateTime.UtcNow.AddDays(-1),
+                    Status = EntryStatus.Completed,
+                    CategoryIds = new List<int> { categoryId },
+                    FilePaths = new List<string>()
+                });
+
+                MessageBox.Show($"Entry created with ID: {entryId} and linked to Category {categoryId}");
+
+                // 3. Read entries
+                var entries = await entryService.GetEntriesAsync();
+
+                var message = string.Join("\n\n", entries.Select(e =>
+                $"[{e.Id}] {e.Title}\n" +
+                $"Date: {e.EventDate}\n" +
+                $"Status: {e.Status}\n" +
+                $"Categories: {string.Join(", ", e.CategoryNames)}"
+                ));
+
+                MessageBox.Show(message);
+
             }
             catch (Exception ex)
             {
@@ -67,6 +94,7 @@ namespace PHRApp
             // Services
             services.AddTransient<IEntryService, EntryService>();
             services.AddTransient<IFileStorageService, FileStorageService>();
+            services.AddTransient<ICategoryService, CategoryService>();
 
             // UI
             services.AddTransient<MainWindow>();
