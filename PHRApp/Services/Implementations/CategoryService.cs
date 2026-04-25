@@ -46,5 +46,18 @@ namespace PHRApp.Services.Implementations
             await _context.SaveChangesAsync();
             return category.Id;
         }
+
+        public async Task<List<CategoryDto>> GetAllCategoriesAsync()
+        {
+            return await _context.Categories
+                .AsNoTracking()
+                .OrderBy(c => c.Name)
+                .Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name
+                })
+                .ToListAsync();
+        }
     }
 }

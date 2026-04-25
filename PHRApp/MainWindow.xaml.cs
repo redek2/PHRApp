@@ -17,7 +17,7 @@ namespace PHRApp
             _viewModel = viewModel;
             DataContext = _viewModel;
 
-            Loaded += async (_, __) => await _viewModel.LoadAsync();
+            Loaded += async (_, __) => await _viewModel.InitializeAsync();
         }
 
         public async void OnSearchClicked(object sender, RoutedEventArgs e)
