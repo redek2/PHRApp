@@ -102,9 +102,57 @@ namespace PHRApp.Services.Implementations
             return entry.Id; // Return the ID of the newly created entry
         }
 
-        public async Task<List<EntryListItemDto>> GetEntriesAsync()
+        public async Task<List<EntryListItemDto>> GetEntriesAsync(EntryQueryDto query)
         {
-            return await _context.Entries
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (query.FromDate.HasValue && query.ToDate.HasValue && query.FromDate > query.ToDate)
+            {
+                throw new ArgumentException("FromDate cannot be later than ToDate.");
+            }
+
+            var dbQuery = _context.Entries
+                .AsNoTracking()
+                .Where(e => !e.IsArchived);
+
+            // Filter by Category
+            if (query.CategoryId.HasValue)
+            {
+                dbQuery = dbQuery.Where(e =>
+                    e.EntryCategories.Any(ec => ec.CategoryId == query.CategoryId.Value));
+            }
+
+            // Filter by Status
+            if (query.Status.HasValue)
+            {
+                dbQuery = dbQuery.Where(e => e.Status == query.Status.Value);
+            }
+
+            // Filter by Date range
+            if (query.FromDate.HasValue)
+            {
+                dbQuery = dbQuery.Where(e => e.EventDate >= query.FromDate.Value);
+            }
+
+            if (query.ToDate.HasValue)
+            {
+                dbQuery = dbQuery.Where(e => e.EventDate <= query.ToDate.Value);
+            }
+
+            // Search (Title + Description)
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                var term = query.SearchTerm.Trim();
+
+                dbQuery = dbQuery.Where(e =>
+                    EF.Functions.Like(e.Title, $"%{term}%") ||
+                    (e.Description != null && EF.Functions.Like(e.Description, $"%{term}%")));
+            }
+
+            return await dbQuery
                 .OrderByDescending(e => e.EventDate)
                 .Select(e => new EntryListItemDto
                 {

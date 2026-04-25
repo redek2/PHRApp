@@ -36,15 +36,15 @@ namespace PHRApp
                 // 1. Create category
                 var categoryId = await categoryService.CreateCategoryAsync(new CreateCategoryDto
                 {
-                    Name = "Zdrowie",
-                    Description = "Zdrowotna kategoria"
+                    Name = "Badania krwi3",
+                    Description = "Kategoria dotycząca badań krwi3"
                 });
 
                 // 2. Create entry
                 var entryId = await entryService.CreateEntryAsync(new CreateEntryDto
                 {
-                    Title = "Wizyta u lekarza",
-                    Description = "Rutynowe badanie",
+                    Title = "Wizyta u lekarza3",
+                    Description = "Rutynowe badanie krwi3",
                     EventDate = DateTime.UtcNow.AddDays(-1),
                     Status = EntryStatus.Completed,
                     CategoryIds = new List<int> { categoryId },
@@ -54,7 +54,14 @@ namespace PHRApp
                 MessageBox.Show($"Entry created with ID: {entryId} and linked to Category {categoryId}");
 
                 // 3. Read entries
-                var entries = await entryService.GetEntriesAsync();
+                var entries = await entryService.GetEntriesAsync(new EntryQueryDto
+                {
+                    CategoryId = categoryId,
+                    Status = EntryStatus.Completed,
+                    FromDate = DateTime.UtcNow.AddDays(-7),
+                    ToDate = DateTime.UtcNow,
+                    SearchTerm = "badanie"
+                });
 
                 var message = string.Join("\n\n", entries.Select(e =>
                 $"[{e.Id}] {e.Title}\n" +
