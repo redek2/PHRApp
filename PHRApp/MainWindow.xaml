@@ -7,6 +7,36 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <StackPanel Orientation="Horizontal"
+                    Margin="10"
+                    Grid.Row="0">
+            <TextBox Width="200"
+                     Margin="0,0,10,0"
+                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
 
+            <Button Content="Szukaj"
+                    Width="100"
+                    Click="OnSearchClicked" />
+        </StackPanel>
+        
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Entries}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  Margin="10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Title" Binding="{Binding Title}" />
+                <DataGridTextColumn Header="Event Date"
+                                    Binding="{Binding EventDate, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" />
+                <DataGridTextColumn Header="Category"
+                                    Binding="{Binding CategoryNamesDisplay}" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

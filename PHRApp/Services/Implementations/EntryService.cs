@@ -149,7 +149,10 @@ namespace PHRApp.Services.Implementations
 
                 dbQuery = dbQuery.Where(e =>
                     EF.Functions.Like(e.Title, $"%{term}%") ||
-                    (e.Description != null && EF.Functions.Like(e.Description, $"%{term}%")));
+                    (e.Description != null && EF.Functions.Like(e.Description, $"%{term}%")) ||
+                    e.EntryCategories.Any(ec =>
+                    EF.Functions.Like(ec.Category.Name, $"%{term}%"))
+                );
             }
 
             return await dbQuery

@@ -9,5 +9,6 @@ namespace PHRApp.Models.DTOs
         public DateTime EventDate { get; set; }
         public EntryStatus Status { get; set; }
         public List<string> CategoryNames { get; set; } = new();
+        public string CategoryNamesDisplay => string.Join(", ", CategoryNames);
     }
 }
