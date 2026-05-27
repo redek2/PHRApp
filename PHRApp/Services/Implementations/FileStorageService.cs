@@ -8,16 +8,23 @@ namespace PHRApp.Services.Implementations
     {
         private readonly string _basePath;
         private const string AttachmentsFolder = "attachments";
+        private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ".pdf",
+            ".jpg",
+            ".jpeg",
+            ".png"
+        };
 
         public FileStorageService()
         {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            _basePath = Path.Combine(appData, "PHRApp", AttachmentsFolder);
+            var appRootPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "PHRApp");
 
-            if (!Directory.Exists(_basePath))
-            {
-                Directory.CreateDirectory(_basePath);
-            }
+            _basePath = Path.Combine(appRootPath, AttachmentsFolder);
+
+            Directory.CreateDirectory(_basePath);
         }
 
         public async Task<List<StoredFileResult>> SaveFilesAsync(List<string> filePaths)
@@ -32,6 +39,11 @@ namespace PHRApp.Services.Implementations
 
                 var fileInfo = new FileInfo(path);
                 var extension = Path.GetExtension(fileInfo.Name);
+                if (!AllowedExtensions.Contains(extension))
+                {
+                    throw new InvalidOperationException($"File type not allowed: {extension}");
+                }
+
                 var storedFileName = $"{Guid.NewGuid()}{extension}";
                 var destinationPath = Path.Combine(_basePath, storedFileName);
 
@@ -53,6 +65,23 @@ namespace PHRApp.Services.Implementations
                 results.Add(result);
             }
             return results;
+        }
+
+        public Task DeleteFilesAsync(List<string> relativePaths)
+        {
+            foreach (var relativePath in relativePaths)
+            {
+                var fullPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "PHRApp",
+                    relativePath);
+
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+            }
+            return Task.CompletedTask;
         }
 
         private string GetContentType(string extension)

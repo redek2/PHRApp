@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PHRApp.Data;
-using PHRApp.Models.DTOs;
-using PHRApp.Models.Enums;
 using PHRApp.Services.Implementations;
 using PHRApp.Services.Interfaces;
 using PHRApp.ViewModels;

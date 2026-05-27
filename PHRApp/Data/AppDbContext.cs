@@ -23,6 +23,7 @@ namespace PHRApp.Data
             modelBuilder.ApplyConfiguration(new EntryCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new EntryAttachmentConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new AttachmentConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

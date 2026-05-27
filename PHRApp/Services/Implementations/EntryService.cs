@@ -72,11 +72,16 @@ namespace PHRApp.Services.Implementations
             }
 
             // Handle file attachments
+            List<string> storedRelativePaths = new();
             List<StoredFileResult> storedFiles = new();
 
             if (dto.FilePaths.Any())
             {
                 storedFiles = await _fileStorageService.SaveFilesAsync(dto.FilePaths);
+
+                storedRelativePaths = storedFiles
+                    .Select(f => f.RelativePath)
+                    .ToList();
             }
 
             foreach (var file in storedFiles)
@@ -97,9 +102,18 @@ namespace PHRApp.Services.Implementations
             }
 
 
-            _context.Entries.Add(entry);
-            await _context.SaveChangesAsync();
-            return entry.Id; // Return the ID of the newly created entry
+            try
+            {
+                _context.Entries.Add(entry);
+                await _context.SaveChangesAsync();
+
+                return entry.Id;
+            }
+            catch
+            {
+                await _fileStorageService.DeleteFilesAsync(storedRelativePaths);
+                throw;
+            }
         }
 
         public async Task<List<EntryListItemDto>> GetEntriesAsync(EntryQueryDto query)
