@@ -18,6 +18,7 @@ namespace PHRApp.ViewModels
 
         private readonly IEntryService _entryService;
         private readonly ICategoryService _categoryService;
+        private readonly IDataRefreshService _refreshService;
 
         public ObservableCollection<EntryListItemDto> Entries { get; } = new();
         public ObservableCollection<CategoryDto> Categories { get; } = new();
@@ -65,10 +66,11 @@ namespace PHRApp.ViewModels
             }
         }
 
-        public EntryListViewModel(IEntryService entryService, ICategoryService categoryService)
+        public EntryListViewModel(IEntryService entryService, ICategoryService categoryService, IDataRefreshService refreshService)
         {
             _entryService = entryService;
             _categoryService = categoryService;
+            _refreshService = refreshService;
         }
 
         public async Task LoadAsync()

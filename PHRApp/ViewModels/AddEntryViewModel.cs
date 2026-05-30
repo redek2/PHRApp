@@ -13,10 +13,11 @@ namespace PHRApp.ViewModels
 
         private readonly IEntryService _entryService;
         private readonly ICategoryService _categoryService;
+        private readonly IDataRefreshService _refreshService;
 
         private string _title = string.Empty;
         private string? _description;
-        private DateTime _eventDate = DateTime.UtcNow;
+        private DateTime _eventDate = DateTime.Now;
         private EntryStatus _status = EntryStatus.Planned;
         private string _errorMessage = string.Empty;
         private bool _isBusy;
@@ -60,11 +61,14 @@ namespace PHRApp.ViewModels
         public ObservableCollection<CategoryDto> AvailableCategories { get; } = new();
         public ObservableCollection<CategoryDto> SelectedCategories { get; } = new();
         public ObservableCollection<string> SelectedFilePaths { get; } = new();
+        public IEnumerable<EntryStatus> AvailableStatuses => Enum.GetValues<EntryStatus>();
 
-        public AddEntryViewModel(IEntryService entryService, ICategoryService categoryService)
+        public AddEntryViewModel(IEntryService entryService, ICategoryService categoryService, IDataRefreshService refreshService)
         {
             _entryService = entryService;
             _categoryService = categoryService;
+            _refreshService = refreshService;
+
         }
         public async Task LoadAsync()
         {
@@ -80,6 +84,7 @@ namespace PHRApp.ViewModels
             {
                 var dto = BuildCreateEntryDto();
                 await _entryService.CreateEntryAsync(dto);
+                _refreshService.NotifyEntriesChanged();
                 return true;
             }
             catch (Exception ex)

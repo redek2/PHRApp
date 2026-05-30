@@ -28,12 +28,12 @@ namespace PHRApp.Services.Implementations
             }
 
             // Validate event date based on status
-            if (dto.Status == EntryStatus.Planned && dto.EventDate <= DateTime.UtcNow)
+            if (dto.Status == EntryStatus.Planned && dto.EventDate <= DateTime.Now)
             {
                 throw new ArgumentException("Event date must be in the future for planned entries.");
             }
 
-            if (dto.Status == EntryStatus.Completed && dto.EventDate > DateTime.UtcNow)
+            if (dto.Status == EntryStatus.Completed && dto.EventDate > DateTime.Now)
             {
                 throw new ArgumentException("Event date cannot be in the future for completed entries.");
             }
@@ -58,8 +58,8 @@ namespace PHRApp.Services.Implementations
                 EventDate = dto.EventDate,
                 Status = dto.Status,
                 IsArchived = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
                 EntryCategories = new List<EntryCategory>()
             };
 
@@ -93,7 +93,7 @@ namespace PHRApp.Services.Implementations
                     FilePath = file.RelativePath,
                     ContentType = file.ContentType,
                     FileSize = file.FileSize,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.Now
                 };
                 entry.EntryAttachments.Add(new EntryAttachment
                 {

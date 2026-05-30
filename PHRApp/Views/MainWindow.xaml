@@ -1,9 +1,9 @@
-﻿<Window x:Class="PHRApp.MainWindow"
+﻿<Window x:Class="PHRApp.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PHRApp"
+        xmlns:local="clr-namespace:PHRApp.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
@@ -30,6 +30,11 @@
             <Button Content="Szukaj"
                     Width="100"
                     Click="OnSearchClicked" />
+
+            <Button Content="Dodaj wpis"
+                    Width="100"
+                    Margin="10,0,0,0"
+                    Click="OnAddEntryClicked" />
         </StackPanel>
         
         <DataGrid Grid.Row="1"

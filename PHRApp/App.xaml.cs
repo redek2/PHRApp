@@ -4,6 +4,7 @@ using PHRApp.Data;
 using PHRApp.Services.Implementations;
 using PHRApp.Services.Interfaces;
 using PHRApp.ViewModels;
+using PHRApp.Views;
 using System.IO;
 using System.Windows;
 
@@ -46,9 +47,12 @@ namespace PHRApp
             services.AddTransient<IFileStorageService, FileStorageService>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<EntryListViewModel>();
+            services.AddTransient<AddEntryViewModel>();
+            services.AddSingleton<IDataRefreshService, DataRefreshService>();
 
             // UI
             services.AddTransient<MainWindow>();
+            services.AddTransient<AddEntryWindow>();
         }
     }
 }
