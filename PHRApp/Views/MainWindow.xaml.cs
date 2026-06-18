@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PHRApp.ViewModels;
 using System.Windows;
+using System.Windows.Input;
 
 namespace PHRApp.Views
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
 
@@ -55,6 +53,16 @@ namespace PHRApp.Views
                     MessageBox.Show($"An error occurred: {ex.Message}");
                 }
             }
+        }
+
+        private async void OnEntryDoubleClicked(object sender, MouseButtonEventArgs e)
+        {
+            if (_viewModel.SelectedEntry == null) return;
+
+            var window = _serviceProvider.GetRequiredService<EntryDetailsWindow>();
+            window.Owner = this;
+            await window.LoadAsync(_viewModel.SelectedEntry.Id);
+            window.ShowDialog();
         }
     }
 }

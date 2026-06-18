@@ -41,7 +41,9 @@
                   ItemsSource="{Binding Entries}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
-                  Margin="10">
+                  Margin="10"
+                  MouseDoubleClick="OnEntryDoubleClicked"
+                  SelectedItem="{Binding SelectedEntry}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Title" Binding="{Binding Title}" />
                 <DataGridTextColumn Header="Event Date"

@@ -1,15 +1,18 @@
-﻿using PHRApp.Models.DTOs;
+﻿using PHRApp.Infrastructure;
+using PHRApp.Models.DTOs;
 using PHRApp.Models.Enums;
 using PHRApp.Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace PHRApp.ViewModels
 {
     public class AddEntryViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
+        public ICommand AddCategoryCommand { get; }
 
         private readonly IEntryService _entryService;
         private readonly ICategoryService _categoryService;
@@ -21,6 +24,7 @@ namespace PHRApp.ViewModels
         private EntryStatus _status = EntryStatus.Planned;
         private string _errorMessage = string.Empty;
         private bool _isBusy;
+        private string _newCategoryName = string.Empty;
 
         public string Title
         {
@@ -55,11 +59,24 @@ namespace PHRApp.ViewModels
         public bool IsBusy
         {
             get => _isBusy;
-            set { if (_isBusy != value) { _isBusy = value; OnPropertyChanged(); } }
+            set
+            {
+                if (_isBusy != value)
+                {
+                    _isBusy = value;
+                    OnPropertyChanged();
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
         }
 
-        public ObservableCollection<CategoryDto> AvailableCategories { get; } = new();
-        public ObservableCollection<CategoryDto> SelectedCategories { get; } = new();
+        public string NewCategoryName
+        {
+            get => _newCategoryName;
+            set { if (_newCategoryName != value) { _newCategoryName = value; OnPropertyChanged(); } }
+        }
+
+        public ObservableCollection<CategorySelectionItem> AvailableCategories { get; } = new();
         public ObservableCollection<string> SelectedFilePaths { get; } = new();
         public IEnumerable<EntryStatus> AvailableStatuses => Enum.GetValues<EntryStatus>();
 
@@ -68,6 +85,10 @@ namespace PHRApp.ViewModels
             _entryService = entryService;
             _categoryService = categoryService;
             _refreshService = refreshService;
+            AddCategoryCommand = new RelayCommand(
+                execute: async _ => await AddCategoryAsync(),
+                canExecute: _ => !string.IsNullOrWhiteSpace(NewCategoryName) && !IsBusy
+            );
 
         }
         public async Task LoadAsync()
@@ -109,19 +130,12 @@ namespace PHRApp.ViewModels
             SelectedFilePaths.Remove(fullPath);
         }
 
-        public void ToggleCategorySelection(CategoryDto category)
-        {
-            if (SelectedCategories.Any(c => c.Id == category.Id))
-                SelectedCategories.Remove(SelectedCategories.First(c => c.Id == category.Id));
-            else
-                SelectedCategories.Add(category);
-        }
         private async Task LoadCategoriesAsync()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();
             AvailableCategories.Clear();
             foreach (var category in categories)
-                AvailableCategories.Add(category);
+                AvailableCategories.Add(CategorySelectionItem.FromDto(category));
         }
 
         private CreateEntryDto BuildCreateEntryDto()
@@ -132,7 +146,10 @@ namespace PHRApp.ViewModels
                 Description = string.IsNullOrWhiteSpace(Description) ? null : Description.Trim(),
                 EventDate = EventDate,
                 Status = Status,
-                CategoryIds = SelectedCategories.Select(c => c.Id).ToList(),
+                CategoryIds = AvailableCategories
+                .Where(c => c.IsSelected)
+                .Select(c => c.Id)
+                .ToList(),
                 FilePaths = SelectedFilePaths.ToList()
             };
         }
@@ -140,6 +157,50 @@ namespace PHRApp.ViewModels
         private void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private async Task AddCategoryAsync()
+        {
+            ErrorMessage = string.Empty;
+
+            var name = NewCategoryName.Trim();
+
+            IsBusy = true;
+            try
+            {
+                var dto = new CreateCategoryDto
+                {
+                    Name = name
+                };
+
+                var newId = await _categoryService.CreateCategoryAsync(dto);
+
+                var newItem = new CategorySelectionItem
+                {
+                    Id = newId,
+                    Name = name,
+                    IsSelected = true
+                };
+
+                var insertAt = AvailableCategories
+                    .ToList()
+                    .FindIndex(c => string.Compare(c.Name, newItem.Name, StringComparison.OrdinalIgnoreCase) > 0);
+
+                if (insertAt < 0)
+                    AvailableCategories.Add(newItem);
+                else
+                    AvailableCategories.Insert(insertAt, newItem);
+
+                NewCategoryName = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Nie można dodać kategorii: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

@@ -116,5 +116,7 @@ namespace PHRApp.ViewModels
             await LoadCategoriesAsync();
             await LoadAsync();
         }
+
+        public EntryListItemDto? SelectedEntry { get; set; }
     }
 }

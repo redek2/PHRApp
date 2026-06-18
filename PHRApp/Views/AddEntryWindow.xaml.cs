@@ -1,4 +1,5 @@
-﻿using PHRApp.ViewModels;
+﻿using Microsoft.Win32;
+using PHRApp.ViewModels;
 using System.Windows;
 
 namespace PHRApp.Views
@@ -30,6 +31,35 @@ namespace PHRApp.Views
         private void OnCancelClicked(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void OnAddFileClicked(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel.IsBusy) return;
+
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Obsługiwane pliki (*.pdf;*.jpg;*.jpeg;*.png)|*.pdf;*.jpg;*.jpeg;*.png",
+                Multiselect = true
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                foreach (var path in dialog.FileNames)
+                {
+                    _viewModel.AddFilePath(path);
+                }
+            }
+        }
+
+        private void OnRemoveFileClicked(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel.IsBusy) return;
+
+            if (AttachmentsListBox.SelectedItem is string selectedPath)
+            {
+                _viewModel.RemoveFilePath(selectedPath);
+            }
         }
     }
 }

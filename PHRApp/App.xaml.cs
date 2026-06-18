@@ -48,6 +48,8 @@ namespace PHRApp
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<EntryListViewModel>();
             services.AddTransient<AddEntryViewModel>();
+            services.AddTransient<EntryDetailsViewModel>();
+            services.AddTransient<EntryDetailsWindow>();
             services.AddSingleton<IDataRefreshService, DataRefreshService>();
 
             // UI

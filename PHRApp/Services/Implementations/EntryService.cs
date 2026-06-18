@@ -183,5 +183,43 @@ namespace PHRApp.Services.Implementations
                 })
                 .ToListAsync();
         }
+
+        public async Task<EntryDetailsDto?> GetEntryByIdAsync(int id)
+        {
+            var entry = await _context.Entries
+                .AsNoTracking()
+                .Include(e => e.EntryCategories)
+                    .ThenInclude(ec => ec.Category)
+                .Include(e => e.EntryAttachments)
+                    .ThenInclude(ea => ea.Attachment)
+                .FirstOrDefaultAsync(e => e.Id == id && !e.IsArchived);
+
+            if (entry == null) return null;
+
+            return new EntryDetailsDto
+            {
+                Id = entry.Id,
+                Title = entry.Title,
+                Description = entry.Description,
+                EventDate = entry.EventDate,
+                Status = entry.Status,
+                CreatedAt = entry.CreatedAt,
+                UpdatedAt = entry.UpdatedAt,
+                CategoryNames = entry.EntryCategories
+                    .Select(ec => ec.Category.Name)
+                    .OrderBy(n => n)
+                    .ToList(),
+                Attachments = entry.EntryAttachments
+                    .Select(ea => new AttachmentDto
+                    {
+                        Id = ea.Attachment.Id,
+                        FileName = ea.Attachment.FileName,
+                        FilePath = ea.Attachment.FilePath,
+                        FileSize = ea.Attachment.FileSize,
+                        ContentType = ea.Attachment.ContentType
+                    })
+                    .ToList()
+            };
+        }
     }
 }

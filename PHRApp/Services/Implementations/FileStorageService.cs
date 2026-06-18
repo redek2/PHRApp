@@ -95,5 +95,11 @@ namespace PHRApp.Services.Implementations
                 _ => "application/octet-stream"
             };
         }
+
+        public string ResolveFullPath(string relativePath)
+        {
+            return Path.Combine(_basePath,
+                Path.GetFileName(relativePath));
+        }
     }
 }

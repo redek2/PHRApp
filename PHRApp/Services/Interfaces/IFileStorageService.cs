@@ -6,5 +6,6 @@ namespace PHRApp.Services.Interfaces
     {
         Task<List<StoredFileResult>> SaveFilesAsync(List<string> filePaths);
         Task DeleteFilesAsync(List<string> relativePaths);
+        string ResolveFullPath(string relativePath);
     }
 }
