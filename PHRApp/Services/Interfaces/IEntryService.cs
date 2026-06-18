@@ -7,5 +7,6 @@ namespace PHRApp.Services.Interfaces
         Task<int> CreateEntryAsync(CreateEntryDto dto);
         Task<List<EntryListItemDto>> GetEntriesAsync(EntryQueryDto query);
         Task<EntryDetailsDto?> GetEntryByIdAsync(int id);
+        Task UpdateEntryAsync(UpdateEntryDto dto);
     }
 }

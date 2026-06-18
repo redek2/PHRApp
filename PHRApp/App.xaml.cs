@@ -6,6 +6,7 @@ using PHRApp.Services.Interfaces;
 using PHRApp.ViewModels;
 using PHRApp.Views;
 using System.IO;
+using System.Net.Sockets;
 using System.Windows;
 
 namespace PHRApp
@@ -50,6 +51,8 @@ namespace PHRApp
             services.AddTransient<AddEntryViewModel>();
             services.AddTransient<EntryDetailsViewModel>();
             services.AddTransient<EntryDetailsWindow>();
+            services.AddTransient<EditEntryViewModel>();
+            services.AddTransient<EditEntryWindow>();
             services.AddSingleton<IDataRefreshService, DataRefreshService>();
 
             // UI

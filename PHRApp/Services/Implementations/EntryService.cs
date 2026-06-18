@@ -221,5 +221,105 @@ namespace PHRApp.Services.Implementations
                     .ToList()
             };
         }
+
+        public async Task UpdateEntryAsync(UpdateEntryDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Title))
+            {
+                throw new ArgumentException("Title is required.");
+            }
+
+            if (dto.Status == EntryStatus.Planned && dto.EventDate <= DateTime.Now)
+            {
+                throw new ArgumentException("Event date must be in the future for planned entries.");
+            }
+
+            if (dto.Status == EntryStatus.Completed && dto.EventDate > DateTime.Now)
+            {
+                throw new ArgumentException("Event date cannot be in the future for completed entries.");
+            }
+
+            var entry = await _context.Entries
+                .Include(e => e.EntryCategories)
+                .Include(e => e.EntryAttachments)
+                    .ThenInclude(ea => ea.Attachment)
+                .FirstOrDefaultAsync(e => e.Id == dto.Id && !e.IsArchived);
+
+            if (entry == null)
+                throw new Exception("Entry not found.");
+
+            entry.Title = dto.Title;
+            entry.Description = dto.Description;
+            entry.EventDate = dto.EventDate;
+            entry.Status = dto.Status;
+            entry.UpdatedAt = DateTime.Now;
+
+            entry.EntryCategories.Clear();
+            if (dto.CategoryIds.Any())
+            {
+                var categories = await _context.Categories
+                    .Where(c => dto.CategoryIds.Contains(c.Id))
+                    .ToListAsync();
+
+                if (categories.Count != dto.CategoryIds.Count)
+                    throw new ArgumentException("One or more categories do not exist.");
+
+                foreach (var category in categories)
+                    entry.EntryCategories.Add(new EntryCategory { CategoryId = category.Id });
+            }
+
+            List<string> pathsToDelete = new();
+            if (dto.AttachmentIdsToRemove.Any())
+            {
+                var toRemove = entry.EntryAttachments
+                    .Where(ea => dto.AttachmentIdsToRemove.Contains(ea.AttachmentId))
+                    .ToList();
+
+                foreach (var ea in toRemove)
+                {
+                    pathsToDelete.Add(ea.Attachment.FilePath);
+                    entry.EntryAttachments.Remove(ea);
+                    _context.Attachments.Remove(ea.Attachment);
+                }
+            }
+
+            List<string> newStoredPaths = new();
+            if (dto.NewFilePaths.Any())
+            {
+                var storedFiles = await _fileStorageService.SaveFilesAsync(dto.NewFilePaths);
+                newStoredPaths = storedFiles.Select(f => f.RelativePath).ToList();
+
+                foreach (var file in storedFiles)
+                {
+                    var attachment = new Attachment
+                    {
+                        FileName = file.OriginalFileName,
+                        StoredFileName = file.StoredFileName,
+                        FilePath = file.RelativePath,
+                        ContentType = file.ContentType,
+                        FileSize = file.FileSize,
+                        CreatedAt = DateTime.Now
+                    };
+                    entry.EntryAttachments.Add(new EntryAttachment { Attachment = attachment });
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                if (pathsToDelete.Any())
+                {
+                    await _fileStorageService.DeleteFilesAsync(pathsToDelete);
+                }
+            }
+            catch
+            {
+                if (newStoredPaths.Any())
+                {
+                    await _fileStorageService.DeleteFilesAsync(newStoredPaths);
+                }
+                throw;
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using PHRApp.Models.DTOs;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PHRApp.Models.DTOs;
 using PHRApp.ViewModels;
 using System.Diagnostics;
 using System.IO;
@@ -11,11 +12,13 @@ namespace PHRApp.Views
     public partial class EntryDetailsWindow : Window
     {
         private readonly EntryDetailsViewModel _viewModel;
+        private readonly IServiceProvider _serviceProvider;
 
-        public EntryDetailsWindow(EntryDetailsViewModel viewModel)
+        public EntryDetailsWindow(EntryDetailsViewModel viewModel, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _viewModel = viewModel;
+            _serviceProvider = serviceProvider;
             DataContext = _viewModel;
         }
 
@@ -52,6 +55,19 @@ namespace PHRApp.Views
         {
             if (sender is ListBoxItem { DataContext: AttachmentDto attachment })
                 OpenAttachment(attachment);
+        }
+
+        private async void OnEditClicked(object sender, RoutedEventArgs e)
+        {
+            var window = _serviceProvider.GetRequiredService<EditEntryWindow>();
+            window.Owner = this;
+            await window.LoadAsync(_viewModel.Entry!.Id);
+            var result = window.ShowDialog();
+
+            if (result == true)
+            {
+                await _viewModel.LoadAsync(_viewModel.Entry.Id);
+            }
         }
     }
 }
