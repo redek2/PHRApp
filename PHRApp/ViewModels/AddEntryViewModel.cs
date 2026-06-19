@@ -16,7 +16,6 @@ namespace PHRApp.ViewModels
 
         private readonly IEntryService _entryService;
         private readonly ICategoryService _categoryService;
-        private readonly IDataRefreshService _refreshService;
 
         private string _title = string.Empty;
         private string? _description;
@@ -26,6 +25,16 @@ namespace PHRApp.ViewModels
         private bool _isBusy;
         private string _newCategoryName = string.Empty;
         private TimeSpan _eventTime = new TimeSpan(8, 0, 0);
+
+        public AddEntryViewModel(IEntryService entryService, ICategoryService categoryService)
+        {
+            _entryService = entryService;
+            _categoryService = categoryService;
+            AddCategoryCommand = new RelayCommand(
+                execute: async _ => await AddCategoryAsync(),
+                canExecute: _ => !string.IsNullOrWhiteSpace(NewCategoryName) && !IsBusy
+            );
+        }
 
         public string Title
         {
@@ -81,17 +90,6 @@ namespace PHRApp.ViewModels
         public ObservableCollection<string> SelectedFilePaths { get; } = new();
         public IEnumerable<EntryStatus> AvailableStatuses => Enum.GetValues<EntryStatus>();
 
-        public AddEntryViewModel(IEntryService entryService, ICategoryService categoryService, IDataRefreshService refreshService)
-        {
-            _entryService = entryService;
-            _categoryService = categoryService;
-            _refreshService = refreshService;
-            AddCategoryCommand = new RelayCommand(
-                execute: async _ => await AddCategoryAsync(),
-                canExecute: _ => !string.IsNullOrWhiteSpace(NewCategoryName) && !IsBusy
-            );
-
-        }
         public async Task LoadAsync()
         {
             await LoadCategoriesAsync();
@@ -108,7 +106,6 @@ namespace PHRApp.ViewModels
             {
                 var dto = BuildCreateEntryDto();
                 await _entryService.CreateEntryAsync(dto);
-                _refreshService.NotifyEntriesChanged();
                 return true;
             }
             catch (Exception ex)

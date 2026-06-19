@@ -52,7 +52,6 @@ namespace PHRApp
             services.AddTransient<EntryDetailsWindow>();
             services.AddTransient<EditEntryViewModel>();
             services.AddTransient<EditEntryWindow>();
-            services.AddSingleton<IDataRefreshService, DataRefreshService>();
 
             // UI
             services.AddTransient<MainWindow>();

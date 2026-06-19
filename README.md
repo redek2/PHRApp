@@ -1,7 +1,7 @@
-# PHRApp — Personal Health Record Application
+# PHRApp - Personal Health Record Application
 
 >**Status projektu: W trakcie realizacji**
-> Aplikacja jest aktualnie w zaawansowanej fazie rozwoju i bliska ukończenia, jednak nie jest jeszcze gotowa do wdrożenia produkcyjnego. Część funkcjonalności może być niepełna lub nieprzetestowana.
+> Aplikacja posiada już komplet podstawowych funkcjonalności (dodawanie, edycja, usuwanie, przeglądanie wpisów wraz z załącznikami i filtrowaniem), ale nie jest jeszcze gotowa do wdrożenia produkcyjnego. Trwają prace nad testami jednostkowymi oraz dopracowaniem interfejsu użytkownika.
 
 ---
 
@@ -30,24 +30,24 @@ Wzorzec architektoniczny: **MVVM** (Model-View-ViewModel) z warstwą serwisów i
 
 ### Zrealizowane
 
-- **Lista wpisów** — przeglądanie wszystkich aktywnych (niearchiwalnych) wpisów zdrowotnych w tabeli.
-- **Wyszukiwanie i filtrowanie** — filtrowanie wpisów po frazie tekstowej (tytuł, opis, nazwa kategorii), kategorii oraz statusie.
-- **Dodawanie wpisów** — formularz tworzenia nowego wpisu z polami: tytuł, opis, data zdarzenia, status.
-- **Statusy wpisów** — trzy stany: `Planned` (zaplanowany), `Completed` (zakończony), `Cancelled` (anulowany) z walidacją daty względem statusu.
-- **Kategorie** — przypisywanie wpisów do wielu kategorii; możliwość tworzenia nowych kategorii bezpośrednio w formularzu wpisu.
-- **Załączniki plików** — dołączanie plików PDF, JPG, JPEG i PNG do wpisów; pliki są kopiowane do lokalnego folderu aplikacji.
-- **Lokalna baza danych SQLite** — dane przechowywane lokalnie w `%LocalAppData%\PHRApp\phrapp.db`.
-- **Archiwizacja** — model danych przewiduje archiwizację wpisów (pole `IsArchived`).
-- **Dependency Injection** — pełna konfiguracja DI z `Microsoft.Extensions.DependencyInjection`.
+- **Lista wpisów** - przeglądanie wszystkich aktywnych (niearchiwalnych) wpisów zdrowotnych w tabeli.
+- **Wyszukiwanie i filtrowanie** - filtrowanie wpisów po frazie tekstowej (tytuł, opis, nazwa kategorii), kategorii, statusie oraz zakresie dat (od/do).
+- **Dodawanie wpisów** - formularz tworzenia nowego wpisu z polami: tytuł, opis, data i godzina zdarzenia, status, kategorie, załączniki.
+- **Widok szczegółów wpisu** - podgląd pełnych danych wpisu wraz z listą załączników, otwieranych przyciskiem lub podwójnym kliknięciem.
+- **Edycja wpisów** - pełna edycja wszystkich pól wpisu, w tym dodawanie i usuwanie załączników (zarówno nowych jak i wcześniej zapisanych).
+- **Usuwanie wpisów** - archiwizacja wpisu (`IsArchived = true`) z potwierdzeniem, dostępna z poziomu widoku szczegółów. Wpis i jego załączniki pozostają w bazie i na dysku - usunięcie jest wyłącznie logiczne (ukrycie z list i widoków).
+- **Statusy wpisów** - trzy stany: `Planned` (zaplanowany), `Completed` (zakończony), `Cancelled` (anulowany) z walidacją daty i godziny względem statusu, zarówno w warstwie ViewModel jak i w serwisie. Wpisy `Planned` z terminem w przeszłości są automatycznie przepinane na `Completed` przy każdym odświeżeniu listy.
+- **Godzina zdarzenia** - wybór godziny zdarzenia (z dokładnością do 15 minut) przez własny komponent `TimePickerControl`, niezależnie od daty.
+- **Kategorie** - przypisywanie wpisów do wielu kategorii; możliwość tworzenia nowych kategorii bezpośrednio w formularzu wpisu.
+- **Załączniki plików** - dołączanie plików PDF, JPG, JPEG i PNG do wpisów; pliki są kopiowane pod unikalną nazwą (GUID) do lokalnego folderu aplikacji. Otwieranie załączników domyślną aplikacją systemową.
+- **Lokalna baza danych SQLite** - dane przechowywane lokalnie w `%LocalAppData%\PHRApp\phrapp.db`.
+- **Dependency Injection** - pełna konfiguracja DI z `Microsoft.Extensions.DependencyInjection`.
 
-### W toku / Planowane
+### Planowane
 
-- Obsługa zdarzeń przycisków "Dodaj plik" i "Usuń plik" w oknie dodawania wpisu.
-- Filtrowanie wpisów po zakresie dat.
-- Widok szczegółów wpisu.
-- Edycja i usuwanie wpisów.
-- Archiwizacja wpisów z poziomu interfejsu.
-- Stylizacja i dopracowanie interfejsu użytkownika.
+- Testy jednostkowe (warstwa serwisów).
+- Spójne, w pełni polskie etykiety w interfejsie oraz dopracowanie wizualne UI.
+- Stronicowanie listy wpisów (przy większej liczbie rekordów).
 
 ---
 
@@ -55,7 +55,7 @@ Wzorzec architektoniczny: **MVVM** (Model-View-ViewModel) z warstwą serwisów i
 
 - System operacyjny: **Windows 10 lub nowszy**
 - .NET 8.0 Runtime (Windows Desktop)
-- Brak wymagań co do zewnętrznych baz danych — aplikacja korzysta z wbudowanej bazy SQLite
+- Brak wymagań co do zewnętrznych baz danych - aplikacja korzysta z wbudowanej bazy SQLite
 
 ---
 
@@ -65,7 +65,7 @@ Wzorzec architektoniczny: **MVVM** (Model-View-ViewModel) z warstwą serwisów i
 
 - Visual Studio 2022 (lub nowszy) z obsługą .NET 8 i WPF
 - .NET 8.0 SDK
-- EF Core CLI Tools (`dotnet-ef`) — opcjonalnie, do zarządzania migracjami
+- EF Core CLI Tools (`dotnet-ef`) - opcjonalnie, do zarządzania migracjami
 
 ### Kroki
 

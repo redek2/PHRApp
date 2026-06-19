@@ -11,11 +11,10 @@ namespace PHRApp.ViewModels
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public EntryListViewModel(IEntryService entryService, ICategoryService categoryService, IDataRefreshService refreshService)
+        public EntryListViewModel(IEntryService entryService, ICategoryService categoryService)
         {
             _entryService = entryService;
             _categoryService = categoryService;
-            _refreshService = refreshService;
             SelectedCategoryId = 0;
             SelectedStatus = null;
         }
@@ -27,7 +26,6 @@ namespace PHRApp.ViewModels
 
         private readonly IEntryService _entryService;
         private readonly ICategoryService _categoryService;
-        private readonly IDataRefreshService _refreshService;
 
         public ObservableCollection<EntryListItemDto> Entries { get; } = new();
         public ObservableCollection<CategoryDto> Categories { get; } = new();
