@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PHRApp.Models.DTOs;
+using PHRApp.Services.Interfaces;
 using PHRApp.ViewModels;
 using System.Diagnostics;
 using System.IO;
@@ -13,12 +14,14 @@ namespace PHRApp.Views
     {
         private readonly EntryDetailsViewModel _viewModel;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEntryService _entryService;
 
-        public EntryDetailsWindow(EntryDetailsViewModel viewModel, IServiceProvider serviceProvider)
+        public EntryDetailsWindow(EntryDetailsViewModel viewModel, IServiceProvider serviceProvider, IEntryService entryService)
         {
             InitializeComponent();
             _viewModel = viewModel;
             _serviceProvider = serviceProvider;
+            _entryService = entryService;
             DataContext = _viewModel;
         }
 
@@ -61,12 +64,36 @@ namespace PHRApp.Views
         {
             var window = _serviceProvider.GetRequiredService<EditEntryWindow>();
             window.Owner = this;
+            await _entryService.UpdateExpiredEntriesAsync();
             await window.LoadAsync(_viewModel.Entry!.Id);
             var result = window.ShowDialog();
 
             if (result == true)
             {
                 await _viewModel.LoadAsync(_viewModel.Entry.Id);
+            }
+        }
+
+        private async void OnDeleteClicked(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show(
+                "Czy na pewno chcesz usunąć ten wpis? Ta operacja jest nieodwracalna.",
+                "Potwierdzenie usunięcia",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                await _entryService.ArchiveEntryAsync(_viewModel.Entry!.Id);
+                DialogResult = true;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Wystąpił błąd podczas usuwania wpisu: {ex.Message}", "Błąd",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

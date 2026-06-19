@@ -63,6 +63,15 @@ namespace PHRApp.Views
             window.Owner = this;
             await window.LoadAsync(_viewModel.SelectedEntry.Id);
             window.ShowDialog();
+
+            try
+            {
+                await _viewModel.LoadAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}");
+            }
         }
     }
 }

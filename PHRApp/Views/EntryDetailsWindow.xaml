@@ -37,7 +37,7 @@
 
             <StackPanel Grid.Column="0">
                 <TextBlock Text="Data zdarzenia" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Entry.EventDate, StringFormat={}{0:yyyy-MM-dd}}"/>
+                <TextBlock Text="{Binding Entry.EventDate, StringFormat={}{0:yyyy-MM-dd HH:mm}}"/>
             </StackPanel>
 
             <StackPanel Grid.Column="2">
@@ -85,6 +85,10 @@
                     Width="100"
                     Margin="0,0,10,0"
                     Click="OnEditClicked"/>
+            <Button Content="Usuń"
+                    Width="100"
+                    Margin="0,0,10,0"
+                    Click="OnDeleteClicked"/>
             <Button Content="Zamknij"
                     Width="100"
                     Click="OnCloseClicked"/>

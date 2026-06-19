@@ -25,6 +25,7 @@ namespace PHRApp.ViewModels
         private string _errorMessage = string.Empty;
         private bool _isBusy;
         private readonly List<int> _removedExistingIds = new();
+        private TimeSpan _eventTime = new TimeSpan(8, 0, 0);
 
         public string Title
         {
@@ -101,7 +102,8 @@ namespace PHRApp.ViewModels
 
                 Title = entry.Title;
                 Description = entry.Description;
-                EventDate = entry.EventDate;
+                EventDate = entry.EventDate.Date;
+                EventTime = entry.EventDate.TimeOfDay;
                 Status = entry.Status;
 
                 foreach (var cat in AvailableCategories)
@@ -155,7 +157,7 @@ namespace PHRApp.ViewModels
                     Id = _entryId,
                     Title = Title.Trim(),
                     Description = string.IsNullOrWhiteSpace(Description) ? null : Description.Trim(),
-                    EventDate = EventDate,
+                    EventDate = EventDate.Date + EventTime,
                     Status = Status,
                     CategoryIds = AvailableCategories
                         .Where(c => c.IsSelected)
@@ -179,6 +181,19 @@ namespace PHRApp.ViewModels
             finally
             {
                 IsBusy = false;
+            }
+        }
+
+        public TimeSpan EventTime
+        {
+            get => _eventTime;
+            set
+            {
+                if (_eventTime != value)
+                {
+                    _eventTime = value;
+                    OnPropertyChanged();
+                }
             }
         }
 

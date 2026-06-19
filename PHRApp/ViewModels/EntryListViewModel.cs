@@ -75,6 +75,7 @@ namespace PHRApp.ViewModels
 
         public async Task LoadAsync()
         {
+            await _entryService.UpdateExpiredEntriesAsync();
 
             var query = new EntryQueryDto
             {

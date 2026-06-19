@@ -21,13 +21,11 @@ namespace PHRApp.Services.Implementations
 
         public async Task<int> CreateEntryAsync(CreateEntryDto dto)
         {
-            // Basic validation of DTO
             if (string.IsNullOrWhiteSpace(dto.Title))
             {
                 throw new ArgumentException("Title is required.");
             }
 
-            // Validate event date based on status
             if (dto.Status == EntryStatus.Planned && dto.EventDate <= DateTime.Now)
             {
                 throw new ArgumentException("Event date must be in the future for planned entries.");
@@ -50,7 +48,6 @@ namespace PHRApp.Services.Implementations
                     throw new ArgumentException("One or more categories do not exist.");
             }
 
-            // Map DTO to Entry entity
             var entry = new Entry
             {
                 Title = dto.Title,
@@ -71,7 +68,6 @@ namespace PHRApp.Services.Implementations
                 });
             }
 
-            // Handle file attachments
             List<string> storedRelativePaths = new();
             List<StoredFileResult> storedFiles = new();
 
@@ -132,20 +128,17 @@ namespace PHRApp.Services.Implementations
                 .AsNoTracking()
                 .Where(e => !e.IsArchived);
 
-            // Filter by Category
             if (query.CategoryId.HasValue)
             {
                 dbQuery = dbQuery.Where(e =>
                     e.EntryCategories.Any(ec => ec.CategoryId == query.CategoryId.Value));
             }
 
-            // Filter by Status
             if (query.Status.HasValue)
             {
                 dbQuery = dbQuery.Where(e => e.Status == query.Status.Value);
             }
 
-            // Filter by Date range
             if (query.FromDate.HasValue)
             {
                 dbQuery = dbQuery.Where(e => e.EventDate >= query.FromDate.Value);
@@ -156,7 +149,6 @@ namespace PHRApp.Services.Implementations
                 dbQuery = dbQuery.Where(e => e.EventDate <= query.ToDate.Value);
             }
 
-            // Search (Title + Description)
             if (!string.IsNullOrWhiteSpace(query.SearchTerm))
             {
                 var term = query.SearchTerm.Trim();
@@ -320,6 +312,41 @@ namespace PHRApp.Services.Implementations
                 }
                 throw;
             }
+        }
+
+        public async Task ArchiveEntryAsync(int id)
+        {
+            var entry = await _context.Entries
+                .FirstOrDefaultAsync(e => e.Id == id && !e.IsArchived);
+
+            if (entry == null)
+                throw new Exception("Entry not found.");
+
+            entry.IsArchived = true;
+            entry.UpdatedAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateExpiredEntriesAsync()
+        {
+            var now = DateTime.Now;
+
+            var expiredEntries = await _context.Entries
+                .Where(e => e.Status == EntryStatus.Planned 
+                        && e.EventDate < now
+                        && !e.IsArchived)
+                .ToListAsync();
+
+            if (!expiredEntries.Any()) return;
+
+            foreach (var entry in expiredEntries)
+            {
+                entry.Status = EntryStatus.Completed;
+                entry.UpdatedAt = now;
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

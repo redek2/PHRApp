@@ -25,6 +25,7 @@ namespace PHRApp.ViewModels
         private string _errorMessage = string.Empty;
         private bool _isBusy;
         private string _newCategoryName = string.Empty;
+        private TimeSpan _eventTime = new TimeSpan(8, 0, 0);
 
         public string Title
         {
@@ -144,7 +145,7 @@ namespace PHRApp.ViewModels
             {
                 Title = Title.Trim(),
                 Description = string.IsNullOrWhiteSpace(Description) ? null : Description.Trim(),
-                EventDate = EventDate,
+                EventDate = EventDate.Date + EventTime,
                 Status = Status,
                 CategoryIds = AvailableCategories
                 .Where(c => c.IsSelected)
@@ -200,6 +201,19 @@ namespace PHRApp.ViewModels
             finally
             {
                 IsBusy = false;
+            }
+        }
+
+        public TimeSpan EventTime
+        {
+            get => _eventTime;
+            set
+            {
+                if (_eventTime != value)
+                {
+                    _eventTime = value;
+                    OnPropertyChanged();
+                }
             }
         }
     }
