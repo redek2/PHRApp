@@ -1,8 +1,6 @@
 ﻿using Microsoft.Win32;
-using PHRApp.Models.DTOs;
 using PHRApp.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace PHRApp.Views
 {

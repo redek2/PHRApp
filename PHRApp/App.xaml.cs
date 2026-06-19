@@ -6,7 +6,6 @@ using PHRApp.Services.Interfaces;
 using PHRApp.ViewModels;
 using PHRApp.Views;
 using System.IO;
-using System.Net.Sockets;
 using System.Windows;
 
 namespace PHRApp

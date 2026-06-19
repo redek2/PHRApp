@@ -101,6 +101,8 @@ namespace PHRApp.ViewModels
         {
             ErrorMessage = string.Empty;
 
+            if (!Validate()) return false;
+
             IsBusy = true;
             try
             {
@@ -215,6 +217,29 @@ namespace PHRApp.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        private bool Validate()
+        {
+            if (string.IsNullOrWhiteSpace(Title))
+            {
+                ErrorMessage = "Tytuł wpisu jest wymagany.";
+                return false;
+            }
+
+            if (Status == EntryStatus.Planned && EventDate.Date + EventTime <= DateTime.Now)
+            {
+                ErrorMessage = "Data i godzina zdarzenia dla wpisu 'Planned' musi być w przyszłości.";
+                return false;
+            }
+
+            if (Status == EntryStatus.Completed && EventDate.Date + EventTime > DateTime.Now)
+            {
+                ErrorMessage = "Data i godzina zdarzenia dla wpisu 'Completed' nie może być w przyszłości.";
+                return false;
+            }
+
+            return true;
         }
     }
 }

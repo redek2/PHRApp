@@ -333,7 +333,7 @@ namespace PHRApp.Services.Implementations
             var now = DateTime.Now;
 
             var expiredEntries = await _context.Entries
-                .Where(e => e.Status == EntryStatus.Planned 
+                .Where(e => e.Status == EntryStatus.Planned
                         && e.EventDate < now
                         && !e.IsArchived)
                 .ToListAsync();

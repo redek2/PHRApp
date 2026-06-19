@@ -73,5 +73,11 @@ namespace PHRApp.Views
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
+
+        private void OnClearDatesClicked(object sender, RoutedEventArgs e)
+        {
+            _viewModel.FromDate = null;
+            _viewModel.ToDate = null;
+        }
     }
 }

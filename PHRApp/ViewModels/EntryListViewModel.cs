@@ -11,6 +11,15 @@ namespace PHRApp.ViewModels
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public EntryListViewModel(IEntryService entryService, ICategoryService categoryService, IDataRefreshService refreshService)
+        {
+            _entryService = entryService;
+            _categoryService = categoryService;
+            _refreshService = refreshService;
+            SelectedCategoryId = 0;
+            SelectedStatus = null;
+        }
+
         private void OnPropertyChanged([CallerMemberName] string? name = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -52,7 +61,6 @@ namespace PHRApp.ViewModels
         }
 
         private int? _selectedCategoryId;
-
         public int? SelectedCategoryId
         {
             get => _selectedCategoryId;
@@ -66,11 +74,32 @@ namespace PHRApp.ViewModels
             }
         }
 
-        public EntryListViewModel(IEntryService entryService, ICategoryService categoryService, IDataRefreshService refreshService)
+        private DateTime? _fromDate;
+        public DateTime? FromDate
         {
-            _entryService = entryService;
-            _categoryService = categoryService;
-            _refreshService = refreshService;
+            get => _fromDate;
+            set
+            {
+                if (_fromDate != value)
+                {
+                    _fromDate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private DateTime? _toDate;
+        public DateTime? ToDate
+        {
+            get => _toDate;
+            set
+            {
+                if (_toDate != value)
+                {
+                    _toDate = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public async Task LoadAsync()
@@ -81,7 +110,9 @@ namespace PHRApp.ViewModels
             {
                 SearchTerm = SearchTerm,
                 Status = SelectedStatus,
-                CategoryId = SelectedCategoryId == 0 ? null : SelectedCategoryId
+                CategoryId = SelectedCategoryId == 0 ? null : SelectedCategoryId,
+                FromDate = FromDate,
+                ToDate = ToDate.HasValue ? ToDate.Value.Date.AddDays(1).AddTicks(-1) : null
             };
 
             var results = await _entryService.GetEntriesAsync(query);
@@ -119,5 +150,12 @@ namespace PHRApp.ViewModels
         }
 
         public EntryListItemDto? SelectedEntry { get; set; }
+        public IEnumerable<object> AvailableStatuses { get; } = new List<object>
+        {
+            new { Label = "Wszystkie", Value = (EntryStatus?)null },
+            new { Label = "Planned", Value = (EntryStatus?)EntryStatus.Planned },
+            new { Label = "Completed", Value = (EntryStatus?)EntryStatus.Completed },
+            new { Label = "Cancelled", Value = (EntryStatus?)EntryStatus.Cancelled }
+        };
     }
 }

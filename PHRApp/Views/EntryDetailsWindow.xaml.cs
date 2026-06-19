@@ -3,7 +3,6 @@ using PHRApp.Models.DTOs;
 using PHRApp.Services.Interfaces;
 using PHRApp.ViewModels;
 using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

@@ -9,35 +9,85 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <StackPanel Orientation="Horizontal"
-                    Margin="10"
-                    Grid.Row="0">
-            
-            <TextBox Width="200"
-                     Margin="0,0,10,0"
-                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
 
-            <ComboBox Width="200"
-                      Margin="0,0,10,0"
-                      ItemsSource="{Binding Categories}"
-                      DisplayMemberPath="Name"
-                      SelectedValuePath="Id"
-                      SelectedValue="{Binding SelectedCategoryId}" />
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-            <Button Content="Szukaj"
-                    Width="100"
-                    Click="OnSearchClicked" />
+            <TextBox Grid.Column="0"
+             Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+             VerticalContentAlignment="Center"/>
 
-            <Button Content="Dodaj wpis"
-                    Width="100"
-                    Margin="10,0,0,0"
-                    Click="OnAddEntryClicked" />
-        </StackPanel>
-        
-        <DataGrid Grid.Row="1"
+            <ComboBox Grid.Column="2"
+              ItemsSource="{Binding Categories}"
+              DisplayMemberPath="Name"
+              SelectedValuePath="Id"
+              SelectedValue="{Binding SelectedCategoryId}"/>
+
+            <ComboBox Grid.Column="4"
+              ItemsSource="{Binding AvailableStatuses}"
+              DisplayMemberPath="Label"
+              SelectedValuePath="Value"
+              SelectedValue="{Binding SelectedStatus}"/>
+
+            <Button Grid.Column="6"
+            Content="Szukaj"
+            Width="80"
+            Click="OnSearchClicked"/>
+
+            <Button Grid.Column="8"
+            Content="Dodaj wpis"
+            Width="90"
+            Click="OnAddEntryClicked"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="10,0,10,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+               Text="Od:"
+               VerticalAlignment="Center"/>
+
+            <DatePicker Grid.Column="2"
+                SelectedDate="{Binding FromDate}"/>
+
+            <TextBlock Grid.Column="4"
+               Text="Do:"
+               VerticalAlignment="Center"/>
+
+            <DatePicker Grid.Column="6"
+                SelectedDate="{Binding ToDate}"/>
+
+            <Button Grid.Column="8"
+            Content="Wyczyść daty"
+            Width="100"
+            Click="OnClearDatesClicked"/>
+        </Grid>
+
+        <DataGrid Grid.Row="2"
                   ItemsSource="{Binding Entries}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
