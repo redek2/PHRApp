@@ -42,7 +42,7 @@
 
             <StackPanel Grid.Column="2">
                 <TextBlock Text="Status" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Entry.Status}"/>
+                <TextBlock Text="{Binding Entry.StatusDisplay}"/>
             </StackPanel>
         </Grid>
 

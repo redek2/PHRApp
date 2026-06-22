@@ -151,9 +151,9 @@ namespace PHRApp.ViewModels
         public IEnumerable<object> AvailableStatuses { get; } = new List<object>
         {
             new { Label = "Wszystkie", Value = (EntryStatus?)null },
-            new { Label = "Planned", Value = (EntryStatus?)EntryStatus.Planned },
-            new { Label = "Completed", Value = (EntryStatus?)EntryStatus.Completed },
-            new { Label = "Cancelled", Value = (EntryStatus?)EntryStatus.Cancelled }
+            new { Label = EntryStatus.Planned.ToDisplayString(), Value = (EntryStatus?)EntryStatus.Planned },
+            new { Label = EntryStatus.Completed.ToDisplayString(), Value = (EntryStatus?)EntryStatus.Completed },
+            new { Label = EntryStatus.Cancelled.ToDisplayString(), Value = (EntryStatus?)EntryStatus.Cancelled }
         };
     }
 }

@@ -14,5 +14,6 @@ namespace PHRApp.Models.DTOs
         public List<string> CategoryNames { get; set; } = new();
         public List<AttachmentDto> Attachments { get; set; } = new();
         public string CategoryNameDisplay => string.Join(", ", CategoryNames);
+        public string StatusDisplay => Status.ToDisplayString();
     }
 }

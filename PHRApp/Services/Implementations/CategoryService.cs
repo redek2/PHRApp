@@ -20,7 +20,7 @@ namespace PHRApp.Services.Implementations
             // Validate input
             if (string.IsNullOrWhiteSpace(dto.Name))
             {
-                throw new ArgumentException("Category name is required.");
+                throw new ArgumentException("Nazwa kategorii jest wymagana.");
             }
 
             var trimmedName = dto.Name.Trim();
@@ -31,7 +31,7 @@ namespace PHRApp.Services.Implementations
 
             if (exists)
             {
-                throw new InvalidOperationException("A category with the same name already exists.");
+                throw new InvalidOperationException("Kategoria o tej samej nazwie już istnieje.");
             }
 
             var category = new Category

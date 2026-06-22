@@ -23,17 +23,17 @@ namespace PHRApp.Services.Implementations
         {
             if (string.IsNullOrWhiteSpace(dto.Title))
             {
-                throw new ArgumentException("Title is required.");
+                throw new ArgumentException("Tytuł jest wymagany.");
             }
 
             if (dto.Status == EntryStatus.Planned && dto.EventDate <= DateTime.Now)
             {
-                throw new ArgumentException("Event date must be in the future for planned entries.");
+                throw new ArgumentException("Data zdarzenia musi być w przyszłości dla wpisów zaplanowanych.");
             }
 
             if (dto.Status == EntryStatus.Completed && dto.EventDate > DateTime.Now)
             {
-                throw new ArgumentException("Event date cannot be in the future for completed entries.");
+                throw new ArgumentException("Data zdarzenia nie może być w przyszłości dla wpisów zakończonych.");
             }
 
             List<Category> categories = new();
@@ -45,7 +45,7 @@ namespace PHRApp.Services.Implementations
                     .ToListAsync();
 
                 if (categories.Count != dto.CategoryIds.Count)
-                    throw new ArgumentException("One or more categories do not exist.");
+                    throw new ArgumentException("Jedna lub więcej kategorii nie istnieje.");
             }
 
             var entry = new Entry
@@ -121,7 +121,7 @@ namespace PHRApp.Services.Implementations
 
             if (query.FromDate.HasValue && query.ToDate.HasValue && query.FromDate > query.ToDate)
             {
-                throw new ArgumentException("FromDate cannot be later than ToDate.");
+                throw new ArgumentException("Data początkowa nie może być późniejsza niż data końcowa.");
             }
 
             var dbQuery = _context.Entries
@@ -218,17 +218,17 @@ namespace PHRApp.Services.Implementations
         {
             if (string.IsNullOrWhiteSpace(dto.Title))
             {
-                throw new ArgumentException("Title is required.");
+                throw new ArgumentException("Tytuł jest wymagany.");
             }
 
             if (dto.Status == EntryStatus.Planned && dto.EventDate <= DateTime.Now)
             {
-                throw new ArgumentException("Event date must be in the future for planned entries.");
+                throw new ArgumentException("Data zdarzenia musi być w przyszłości dla wpisów zaplanowanych.");
             }
 
             if (dto.Status == EntryStatus.Completed && dto.EventDate > DateTime.Now)
             {
-                throw new ArgumentException("Event date cannot be in the future for completed entries.");
+                throw new ArgumentException("Data zdarzenia nie może być w przyszłości dla wpisów zakończonych.");
             }
 
             var entry = await _context.Entries
@@ -238,7 +238,7 @@ namespace PHRApp.Services.Implementations
                 .FirstOrDefaultAsync(e => e.Id == dto.Id && !e.IsArchived);
 
             if (entry == null)
-                throw new Exception("Entry not found.");
+                throw new Exception("Nie znaleziono wpisu.");
 
             entry.Title = dto.Title;
             entry.Description = dto.Description;
@@ -254,7 +254,7 @@ namespace PHRApp.Services.Implementations
                     .ToListAsync();
 
                 if (categories.Count != dto.CategoryIds.Count)
-                    throw new ArgumentException("One or more categories do not exist.");
+                    throw new ArgumentException("Jedna lub więcej kategorii nie istnieje.");
 
                 foreach (var category in categories)
                     entry.EntryCategories.Add(new EntryCategory { CategoryId = category.Id });
@@ -320,7 +320,7 @@ namespace PHRApp.Services.Implementations
                 .FirstOrDefaultAsync(e => e.Id == id && !e.IsArchived);
 
             if (entry == null)
-                throw new Exception("Entry not found.");
+                throw new Exception("Nie znaleziono wpisu.");
 
             entry.IsArchived = true;
             entry.UpdatedAt = DateTime.Now;

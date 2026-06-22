@@ -88,8 +88,12 @@ namespace PHRApp.ViewModels
 
         public ObservableCollection<CategorySelectionItem> AvailableCategories { get; } = new();
         public ObservableCollection<string> SelectedFilePaths { get; } = new();
-        public IEnumerable<EntryStatus> AvailableStatuses => Enum.GetValues<EntryStatus>();
-
+        public IEnumerable<object> AvailableStatuses { get; } = new List<object>
+        {
+            new { Label = EntryStatus.Planned.ToDisplayString(), Value = EntryStatus.Planned },
+            new { Label = EntryStatus.Completed.ToDisplayString(), Value = EntryStatus.Completed },
+            new { Label = EntryStatus.Cancelled.ToDisplayString(), Value = EntryStatus.Cancelled }
+        };
         public async Task LoadAsync()
         {
             await LoadCategoriesAsync();
@@ -226,13 +230,13 @@ namespace PHRApp.ViewModels
 
             if (Status == EntryStatus.Planned && EventDate.Date + EventTime <= DateTime.Now)
             {
-                ErrorMessage = "Data i godzina zdarzenia dla wpisu 'Planned' musi być w przyszłości.";
+                ErrorMessage = $"Data i godzina zdarzenia dla wpisu '{Status.ToDisplayString()}' musi być w przyszłości.";
                 return false;
             }
 
             if (Status == EntryStatus.Completed && EventDate.Date + EventTime > DateTime.Now)
             {
-                ErrorMessage = "Data i godzina zdarzenia dla wpisu 'Completed' nie może być w przyszłości.";
+                ErrorMessage = $"Data i godzina zdarzenia dla wpisu '{Status.ToDisplayString()}' nie może być w przyszłości.";
                 return false;
             }
 

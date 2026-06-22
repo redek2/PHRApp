@@ -51,7 +51,9 @@
             <StackPanel Grid.Column="4">
                 <TextBlock Text="Status"/>
                 <ComboBox ItemsSource="{Binding AvailableStatuses}"
-                  SelectedItem="{Binding Status}"/>
+                          DisplayMemberPath="Label"
+                          SelectedValuePath="Value"
+                          SelectedValue="{Binding Status}"/>
             </StackPanel>
         </Grid>
 

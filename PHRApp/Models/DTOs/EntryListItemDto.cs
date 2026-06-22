@@ -10,5 +10,6 @@ namespace PHRApp.Models.DTOs
         public EntryStatus Status { get; set; }
         public List<string> CategoryNames { get; set; } = new();
         public string CategoryNamesDisplay => string.Join(", ", CategoryNames);
+        public string StatusDisplay => Status.ToDisplayString();
     }
 }

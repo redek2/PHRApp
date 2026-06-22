@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PHRApp.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="PHRApp - Lista wpisów" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -95,11 +96,12 @@
                   MouseDoubleClick="OnEntryDoubleClicked"
                   SelectedItem="{Binding SelectedEntry}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Title" Binding="{Binding Title}" />
-                <DataGridTextColumn Header="Event Date"
+                <DataGridTextColumn Header="Tytuł" Binding="{Binding Title}" />
+                <DataGridTextColumn Header="Data zdarzenia"
                                     Binding="{Binding EventDate, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-                <DataGridTextColumn Header="Status" Binding="{Binding Status}" />
-                <DataGridTextColumn Header="Category"
+                <DataGridTextColumn Header="Status" 
+                                    Binding="{Binding StatusDisplay}" />
+                <DataGridTextColumn Header="Kategorie"
                                     Binding="{Binding CategoryNamesDisplay}" />
             </DataGrid.Columns>
         </DataGrid>
